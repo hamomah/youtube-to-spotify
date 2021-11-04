@@ -3,23 +3,22 @@ import { Redirect } from "react-router-dom";
 
 export function Login() {
 
-    const [access_token, setAccessToken] = useState(window.sessionStorage.getItem("access_token"))
-    const [user_id, setUserId] = useState(window.sessionStorage.getItem("access_token"))
+    const [session, setSession] = useState({access_token: null, user_id: null})
 
-    if (access_token !== null && user_id !== null) {
+    if (session.access_token !== null && session.user_id !== null) {
         return <Redirect to="/" />;
     }
 
     else {
-        var url = new URL(window.location.href);
-        var params = new URLSearchParams(url.searchParams);
+        var url = new URL(window.location.href)
+        var params = new URLSearchParams(url.search);
 
         if (params.get("access_token") !== null && params.get("user_id") !== null) {
-            window.sessionStorage.setItem("access_token", params.get("access_token"))
-            window.sessionStorage.setItem("user_id", params.get("user_id"))
-
-            setAccessToken(window.sessionStorage.getItem("access_token"))
-            setUserId(window.sessionStorage.getItem("user_id"))
+            let access_token = params.get("access_token")
+            let user_id = params.get("user_id")
+            window.sessionStorage.setItem("access_token", access_token)
+            window.sessionStorage.setItem("user_id", user_id)
+            setSession({ acccess_token: access_token, user_id: user_id})
         }
     }
 
