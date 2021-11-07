@@ -22,10 +22,11 @@ export async function createPlaylistAndSongs(access_token, user_id, songs) {
     var ids = await Promise.all(songs.map(async (song) => {
         return await getSongId(access_token, song)
     }))
+    ids = ids.filter((id) => id.length !== 0)
 
     var addTracksToPlaylistUrl = new URL(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`)
 
-    addTracksToPlaylistUrl.searchParams.set("uris", ids.toString())
+    addTracksToPlaylistUrl.searchParams.set("uris", ids.map((id) => { if (id.length !== 0) return id }).toString())
 
     await fetch(addTracksToPlaylistUrl.toString(), {
         method: 'POST',
@@ -56,7 +57,14 @@ async function getSongId(access_token, song) {
         }
     });
 
-    var id = await response.json().then(data => data.tracks.items[0].uri)
+    var id = await response.json().then(data => {
+        if (data.tracks.items.length !== 0) {
+            return data.tracks.items[0].uri
+        }
+        else {
+            return ""
+        }
+    })
 
     return id
 }
