@@ -26,7 +26,7 @@ export async function createPlaylistAndSongs(access_token, user_id, songs) {
 
     var addTracksToPlaylistUrl = new URL(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`)
 
-    addTracksToPlaylistUrl.searchParams.set("uris", ids.map((id) => { if (id.length !== 0) return id }).toString())
+    addTracksToPlaylistUrl.searchParams.set("uris", ids.toString())
 
     await fetch(addTracksToPlaylistUrl.toString(), {
         method: 'POST',
