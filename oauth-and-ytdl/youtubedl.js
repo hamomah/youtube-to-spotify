@@ -24,7 +24,8 @@ async function getsonginfo(video) {
         artist: artist,
         title: title,
         youtubeTitle: videoResponse.videoDetails.title,
-        thumbnail: videoResponse.videoDetails.thumbnails[3].url
+        thumbnail: videoResponse.videoDetails.thumbnails[3].url,
+        video_id: videoResponse.videoDetails.video_id
     };
 }
 

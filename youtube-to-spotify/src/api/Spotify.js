@@ -1,5 +1,49 @@
-export async function createPlaylistAndSongs(access_token, user_id, songs) {
-    console.log(songs)
+export async function createPlaylistAddSongs(access_token, user_id, songsFound) {
+    var playlistId = await createPlaylist(access_token, user_id)
+    return addTracksToPlaylist(access_token, songsFound, playlistId)
+}
+
+
+async function getSongOnSpotify(access_token, song) {
+    var url = new URL('https://api.spotify.com/v1/search')
+    url.searchParams.set("q", song.artist + " " + song.title)
+    url.searchParams.set("type", "track")
+    url.searchParams.set("market", "US")
+    url.searchParams.set("limit", "1")
+
+    const response = await fetch(url.toString(), {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer ' + access_token
+        }
+    });
+
+    var spotify_song = await response.json().then(data => {
+        if (data.tracks.items.length !== 0) {
+            return {
+                id: data.tracks.items[0].uri,
+                name: data.tracks.items[0].name,
+                artist: data.tracks.items[0].artists[0].name,
+                album_cover: data.tracks.items[0].album.images[1]
+            }
+        }
+        else {
+            return {
+                id: ""
+            }
+        }
+    })
+
+    return {
+        youtube_song: song,
+        spotify_song: spotify_song,
+    }
+}
+
+async function createPlaylist(access_token, user_id) {
     var createPlaylistUrl = new URL(`https://api.spotify.com/v1/users/${user_id}/playlists`)
 
     var createPlaylistResponse = await fetch(createPlaylistUrl.toString(), {
@@ -18,17 +62,19 @@ export async function createPlaylistAndSongs(access_token, user_id, songs) {
     });
 
     var playlistId = await createPlaylistResponse.json().then(data => data.id)
+    return playlistId
+}
 
-    var ids = await Promise.all(songs.map(async (song) => {
-        return await getSongId(access_token, song)
-    }))
-    ids = ids.filter((id) => id.length !== 0)
+async function addTracksToPlaylist(access_token, songsFound, playlistId) {
 
     var addTracksToPlaylistUrl = new URL(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`)
 
-    addTracksToPlaylistUrl.searchParams.set("uris", ids.toString())
+    var trackUris = songsFound.map((song) => song.spotify_song.id).toString()
 
-    await fetch(addTracksToPlaylistUrl.toString(), {
+
+    addTracksToPlaylistUrl.searchParams.set("uris", trackUris)
+
+    var response = await fetch(addTracksToPlaylistUrl.toString(), {
         method: 'POST',
         mode: 'cors',
         headers: {
@@ -37,34 +83,13 @@ export async function createPlaylistAndSongs(access_token, user_id, songs) {
             'Authorization': 'Bearer ' + access_token
         }
     });
+    return response
 }
 
+export async function searchSongsOnSpotify(access_token, songs) {
+    var searchResult = await Promise.all(songs.map(async (song) => {
+        return await getSongOnSpotify(access_token, song)
+    }))
 
-async function getSongId(access_token, song) {
-    var url = new URL('https://api.spotify.com/v1/search')
-    url.searchParams.set("q", song.artist + " " + song.title)
-    url.searchParams.set("type", "track")
-    url.searchParams.set("market", "US")
-    url.searchParams.set("limit", "1")
-
-    const response = await fetch(url.toString(), {
-        method: 'GET',
-        mode: 'cors',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': 'Bearer ' + access_token
-        }
-    });
-
-    var id = await response.json().then(data => {
-        if (data.tracks.items.length !== 0) {
-            return data.tracks.items[0].uri
-        }
-        else {
-            return ""
-        }
-    })
-
-    return id
+    return searchResult
 }

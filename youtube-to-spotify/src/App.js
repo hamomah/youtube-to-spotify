@@ -4,9 +4,9 @@ import {
     Switch,
     Route
 } from "react-router-dom";
-import { Playlist } from "./components/Playlist";
 import { Login } from "./components/Login";
 import { Logout } from "./components/Logout";
+import YoutubeToSpotifyTransfer from "./components/YoutubeToSpotifyTransfer";
 
 export default function App() {
 
@@ -14,7 +14,7 @@ export default function App() {
         <Router>
             <Switch>
                 <Route exact path="/">
-                    <Playlist />
+                    <YoutubeToSpotifyTransfer />
                 </Route>
                 <Route path="/login">
                     <Login />
