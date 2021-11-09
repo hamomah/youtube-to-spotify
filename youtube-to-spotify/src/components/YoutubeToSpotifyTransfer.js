@@ -7,7 +7,6 @@ import getSongsFromYoutubePlaylist from "../api/YoutubeDL";
 import { YoutubePlaylist } from "./YoutubePlaylist"
 
 export default function YoutubeToSpotifyTransfer() {
-
     const [playlist_url, setPlaylistURL] = useState("")
     const [songs, setSongs] = useState([])
     const [spotifySearchResult, setSpotifySearchResult] = useState({ songsFound: [], songsNotFound: [] })
@@ -18,18 +17,20 @@ export default function YoutubeToSpotifyTransfer() {
 
     useEffect(() => {
         let youtubePlaylist = window.sessionStorage.getItem("youtubePlaylist")
-        setSongs(JSON.parse(youtubePlaylist))
+        if (youtubePlaylist !== null) {
+            setSongs(JSON.parse(youtubePlaylist))
+        }
 
-    }, []);
-
-    useEffect(() => {
-        let spotifySongs = window.sessionStorage.getItem("spotifySongs")
-        setSpotifySearchResult(JSON.parse(spotifySongs))
-    }, []);
-
-    useEffect(() => {
         let playlistUrl = window.sessionStorage.getItem("playlistUrl")
-        setPlaylistURL(playlistUrl)
+        if (playlistUrl !== null) {
+            setPlaylistURL(playlistUrl)
+        }
+
+        let spotifySongs = window.sessionStorage.getItem("spotifySongs")
+        if (spotifySongs !== null) {
+            setSpotifySearchResult(JSON.parse(spotifySongs))
+        }
+
     }, []);
 
     useEffect(() => {
@@ -96,5 +97,4 @@ export default function YoutubeToSpotifyTransfer() {
                 onSearchSongsOnSpotify={onSearchSongsOnSpotify} />
         </div>
     )
-
 }
