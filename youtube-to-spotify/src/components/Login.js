@@ -1,10 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Redirect, useLocation } from "react-router-dom";
 
 export function Login() {
 
-    const [session, setSession] = useState({ access_token: window.sessionStorage.getItem("access_token"), 
-    user_id: window.sessionStorage.getItem("access_token") })
+    const [session, setSession] = useState({
+        access_token: null,
+        user_id: null
+    })
+
+    useEffect(() => {
+        setSession({
+            access_token: window.sessionStorage.getItem("access_token"),
+            user_id: window.sessionStorage.getItem("access_token")
+        })
+    },[])
 
     var url = useLocation()
 
@@ -14,7 +23,6 @@ export function Login() {
 
     else {
         var params = new URLSearchParams(url.search);
-
         if (params.get("access_token") !== null && params.get("user_id") !== null) {
             let access_token = params.get("access_token")
             let user_id = params.get("user_id")
