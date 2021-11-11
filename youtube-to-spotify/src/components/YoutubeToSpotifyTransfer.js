@@ -4,11 +4,9 @@ import PlaylistInput from './PlaylistInput'
 import { SpotifySearchResult } from './SpotifySearchResult'
 import { createPlaylistAddSongs, searchSongsOnSpotify } from "../api/Spotify";
 import getSongsFromYoutubePlaylist from "../api/YoutubeDL";
-import { YoutubePlaylist } from "./YoutubePlaylist"
 
 export default function YoutubeToSpotifyTransfer() {
     const [playlist_url, setPlaylistURL] = useState("")
-    const [songs, setSongs] = useState([])
     const [spotifySearchResult, setSpotifySearchResult] = useState({ songsFound: [], songsNotFound: [] })
     const [playlistCreated, setPlaylistCreated] = useState(false)
 
@@ -16,11 +14,6 @@ export default function YoutubeToSpotifyTransfer() {
     var user_id = window.sessionStorage.getItem("user_id")
 
     useEffect(() => {
-        let youtubePlaylist = window.sessionStorage.getItem("youtubePlaylist")
-        if (youtubePlaylist !== null) {
-            setSongs(JSON.parse(youtubePlaylist))
-        }
-
         let playlistUrl = window.sessionStorage.getItem("playlistUrl")
         if (playlistUrl !== null) {
             setPlaylistURL(playlistUrl)
@@ -34,18 +27,23 @@ export default function YoutubeToSpotifyTransfer() {
     }, []);
 
     useEffect(() => {
-        window.sessionStorage.setItem("youtubePlaylist", JSON.stringify(songs))
         window.sessionStorage.setItem("spotifySongs", JSON.stringify(spotifySearchResult))
         window.sessionStorage.setItem("playlistUrl", playlist_url)
     });
 
-    async function onGetYoutubeSongs() {
-        let songs = await getSongsFromYoutubePlaylist(playlist_url)
-        setSongs(songs)
+    async function onGetYoutubeSongsAndSearchOnSpotify() {
+        await getYoutubeSongs().then(async (youtubeSongs) => {
+            searchYoutubeSongsOnSpotify(youtubeSongs)
+        })
     }
 
-    async function onSearchSongsOnSpotify() {
-        let spotifySearchResult = await searchSongsOnSpotify(access_token, songs)
+    async function getYoutubeSongs() {
+        let youtubeSongs = await getSongsFromYoutubePlaylist(playlist_url)
+        return youtubeSongs
+    }
+
+    async function searchYoutubeSongsOnSpotify(youtubeSongs) {
+        let spotifySearchResult = await searchSongsOnSpotify(access_token, youtubeSongs)
         var songsFound = spotifySearchResult.filter((song) => song.spotify_song.id.length !== 0)
         var songsNotFound = spotifySearchResult.filter((song) => song.spotify_song.id.length === 0)
 
@@ -68,33 +66,26 @@ export default function YoutubeToSpotifyTransfer() {
     }
 
     function onTansferAnotherPlaylist() {
-        setSongs([])
         setSpotifySearchResult({ songsFound: [], songsNotFound: [] })
         setPlaylistURL("")
+        setPlaylistCreated(false)
     }
 
     if (access_token === null) {
         return <Redirect to="/login" />;
     }
 
-    if (spotifySearchResult.songsFound.length !== 0 || spotifySearchResult.songsNotFound.length !== 0) {
-        return (
-            <div>
-                <SpotifySearchResult spotifySearchResult={spotifySearchResult} playlistCreated={playlistCreated}
-                    onCreatePlaylistAddSongs={onCreatePlaylistAddSongs} />
-                <button onClick={onTansferAnotherPlaylist} style={{ display: playlistCreated === true ? 'block' : 'none' }}>Transfer another youtube playlist</button>
-            </div>
-        )
-    }
+
 
     return (
         <div>
             <a href="/logout">Logout</a>
             <h2>Transfer Youtube Playlist to Spotify</h2>
             <hr />
-            <PlaylistInput onPlaylistUrlChange={onPlaylistUrlChange} playlist_url={playlist_url} />
-            <YoutubePlaylist songs={songs} playlist_url={playlist_url} onGetYoutubeSongs={onGetYoutubeSongs}
-                onSearchSongsOnSpotify={onSearchSongsOnSpotify} />
+            <PlaylistInput onPlaylistUrlChange={onPlaylistUrlChange} onGetYoutubeSongsAndSearchOnSpotify={onGetYoutubeSongsAndSearchOnSpotify} playlist_url={playlist_url} />
+            <SpotifySearchResult spotifySearchResult={spotifySearchResult} playlistCreated={playlistCreated}
+                onCreatePlaylistAddSongs={onCreatePlaylistAddSongs} />
+            <button onClick={onTansferAnotherPlaylist} style={{ display: playlistCreated === true ? 'block' : 'none' }}>Transfer another youtube playlist</button>
         </div>
     )
 }

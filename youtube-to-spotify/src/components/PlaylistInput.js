@@ -14,6 +14,7 @@ export default function PlaylistInput(props) {
             <label>
                 <input onChange={handleUrlInput} value={playlist_url} type="text" placeholder="Playlist URL" />
             </label>
+            <button onClick={props.onGetYoutubeSongsAndSearchOnSpotify} disabled={playlist_url.length === 0 ? true : false}>Search for songs on spotify</button>
         </div>
     )
 }

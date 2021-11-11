@@ -17,7 +17,7 @@ export function YoutubePlaylist(props) {
     return (
         <div>
             <YoutubePlaylistSongs songs={songs} />
-            <button onClick={handleGetYoutubeSongs} style={{ display: playlist_url.length !== 0 ? 'block' : 'none' }}>Get songs from youtube playlist</button>
+            <button onClick={handleGetYoutubeSongs} disabled={playlist_url.length === 0 ? true : false}>Get songs from youtube playlist</button>
             <button onClick={handleSearchSongsOnSpotify} style={{ display: songs.length !== 0 ? 'block' : 'none' }}> Search for these songs on spotify </button>
         </div>
     );
