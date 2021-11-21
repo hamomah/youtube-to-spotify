@@ -15,7 +15,7 @@ export function SpotifySearchResult(props) {
     if (spotifySearchResult.songsFound.length !== 0 || spotifySearchResult.songsNotFound.length !== 0){
         console.log("spoti")
         return (
-            <div>
+            <div className="container">
                 <SongsFound songsFound={spotifySearchResult.songsFound} />
                 <SongsNotFound songsNotFound={spotifySearchResult.songsNotFound} />
                 <button onClick={handleCreatePlaylistAndSongs} style={{ display: spotifySearchResult.songsFound.length !== 0 && playlistCreated === false ? 'block' : 'none' }}>Add songs found to my spotify account</button>
