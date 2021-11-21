@@ -12,18 +12,24 @@ export function SpotifySearchResult(props) {
     function handleCreatePlaylistAndSongs() {
         props.onCreatePlaylistAddSongs()
     }
-    if (spotifySearchResult.songsFound.length !== 0 || spotifySearchResult.songsNotFound.length !== 0){
+    if (spotifySearchResult.songsFound.length !== 0 || spotifySearchResult.songsNotFound.length !== 0) {
         console.log("spoti")
         return (
-            <div className="container">
-                <SongsFound songsFound={spotifySearchResult.songsFound} />
-                <SongsNotFound songsNotFound={spotifySearchResult.songsNotFound} />
+            <div>
+                <div className="container">
+                    <div className="songs-found">
+                        <SongsFound songsFound={spotifySearchResult.songsFound} />
+                    </div>
+                    <div className="songs-not-found">
+                        <SongsNotFound songsNotFound={spotifySearchResult.songsNotFound} />
+                    </div>
+                </div>
                 <button onClick={handleCreatePlaylistAndSongs} style={{ display: spotifySearchResult.songsFound.length !== 0 && playlistCreated === false ? 'block' : 'none' }}>Add songs found to my spotify account</button>
             </div>
         )
     }
 
-    return(
+    return (
         <div></div>
     )
 }

@@ -5,7 +5,7 @@ export default function SongFoundRow(props) {
     var song = props.song
 
     return (
-        <div className="song-pair">
+        <div className="song-found">
             <div className="songs">
                 <div className="song">
                     <img className="cover" src={song.youtube_song.thumbnail} alt="cover"></img>

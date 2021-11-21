@@ -1,4 +1,5 @@
 import React from 'react'
+import SongNotFoundRow from './SongNotFoundRow';
 
 export default function SongsNotFound(props) {
 
@@ -6,18 +7,11 @@ export default function SongsNotFound(props) {
 
     if (songsNotFound.length !== 0) {
         return (
-            <div>
-                <h1> Songs not found on Spotify </h1>
-                <div>{
-                    songsNotFound.map((song) =>
-                        <div key={song.youtube_song.title}>
-                            {song.youtube_song.artist + " - " + song.youtube_song.title}
-                            <br />
-                            <img src={song.youtube_song.thumbnail} alt="cover"></img>
-                        </div>
-                    )
-                }</div>
-            </div>
+            <>
+            {
+                songsNotFound.map((song) => < SongNotFoundRow key={song.youtube_song.title} song={song} />)
+            }
+            </>
         );
     }
 

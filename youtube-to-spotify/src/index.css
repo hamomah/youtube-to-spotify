@@ -28,7 +28,7 @@ code {
   margin: 0px auto;
 }
 
-.song-pair {
+.song-found {
   display: flex;
   flex-wrap: wrap;
   background-color: #e5e5e5;
@@ -65,3 +65,13 @@ code {
   padding: 0 15px;
 }
 
+.songs-not-found {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.song-not-found {
+  padding: 10px;
+  margin: 10px 0;
+}
